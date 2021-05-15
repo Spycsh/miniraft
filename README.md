@@ -9,4 +9,4 @@ goreman start
 
 Reference:
 
-![raft](mini-raft.PNG)
+![raft](https://raw.githubusercontent.com/Spycsh/miniraft/main/mini-raft.png)
