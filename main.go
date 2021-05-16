@@ -147,7 +147,7 @@ func (rf *RaftNode) sendRequestVote(serverID int, args VoteArgs, reply *VoteRepl
 
 	defer client.Close()
 	// 调用client的RequestVote进行vote
-	client.Call("Raft.RequestVote", args, reply)
+	client.Call("RaftNode.RequestVote", args, reply)
 
 	if reply.Term > rf.currentTerm {
 		rf.currentTerm = reply.Term
@@ -272,7 +272,7 @@ func (rf *RaftNode) sendAppendEntries(serverID int, args AppendEntriesArgs, repl
 	}
 
 	defer client.Close()
-	client.Call("Raft.AppendEntries", args, reply)
+	client.Call("RaftNode.AppendEntries", args, reply)
 
 	// 对应If successful: update nextIndex and matchIndex for follower
 	if reply.Success {
@@ -322,7 +322,7 @@ func (rf *RaftNode) start() {
 				select {
 				case <-rf.heartbeatC:
 					log.Printf("follower-%d received heartbeat\n", rf.me)
-				case <-time.After(time.Duration(rand.Intn(150)+150) * time.Millisecond):
+				case <-time.After(time.Duration(rand.Intn(300-150)+150) * time.Millisecond):
 					log.Printf("follower-%d timeout\n", rf.me)
 					rf.state = Candidate
 				}
@@ -337,7 +337,7 @@ func (rf *RaftNode) start() {
 				// case 2: 一段时间后收到半数以上投票, toLeaderC会被设为true，此时由Candidate转变为Leader
 				select {
 
-				case <-time.After(time.Duration(rand.Intn(150)+150) * time.Millisecond):
+				case <-time.After(time.Duration(rand.Intn(300-150)+150) * time.Millisecond):
 					rf.state = Follower
 				case <-rf.toLeaderC:
 					fmt.Printf("Node: %d, I am leader\n", rf.me)
